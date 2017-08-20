@@ -1,4 +1,4 @@
-package session
+package sessions
 
 import (
 	"github.com/gin-gonic/gin"
@@ -88,9 +88,9 @@ func (s *CookieStore) Save(c *gin.Context, session *SessionImp) error {
 
 // Save adds a single session to the response.
 func (s *CookieStore) Delete(c *gin.Context, name string) error {
-	session, error := s.Get(c, name)
-	if error != nil {
-		return error
+	session, err := s.Get(c, name)
+	if err != nil {
+		return err
 	}
 	session.Options.MaxAge = -1
 	return s.Save(c, session)
