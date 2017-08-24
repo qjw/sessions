@@ -8,13 +8,6 @@ import (
 	"net/http"
 )
 
-func GinSessionMiddleware(store sessions.Store, key string) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		session, _ := store.Get(c, key)
-		c.Set("session", session)
-	}
-}
-
 func main() {
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     "127.0.0.1:6379",
@@ -36,7 +29,7 @@ func main() {
 		session, _ := store.Get(c, "session_test")
 		session.Set("key", "value")
 		// 保存
-		store.Save(c, session)
+		session.Save()
 		// 或者 保存所有的session
 		// sessions.Save(c)
 
@@ -59,7 +52,7 @@ func main() {
 	})
 
 	r.GET("/middle",
-		GinSessionMiddleware(store,"session_test"),
+		sessions.GinSessionMiddleware(store,"session_test"),
 		func(c *gin.Context) {
 			// 使用中间件，自动设置session到gin.Context中，避免大量的全局变量传递
 			session := c.MustGet("session").(sessions.Session)
