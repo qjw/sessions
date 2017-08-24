@@ -1,14 +1,3 @@
-# Session
-
-目前支持三个session后端
-
-1. cookie，session的内容全部序列化到cookie中返回到浏览器，Flash使用此方式
-2. file，session的内容存在**本地文件**中，session的id通过cookie返回到浏览器
-3. redis，session的内容存在**redis数据库**中，session的id通过cookie返回到浏览器
-
-很少直接使用session
-
-``` go
 package main
 
 import (
@@ -87,44 +76,3 @@ func main() {
 		})
 	r.Run("0.0.0.0:9090")
 }
-```
-
-# Flask
-
-由于**[gorilla/securecookie](https://github.com/gorilla/securecookie)**需要一个初始密钥进行加密，所以初始化有个密钥的参数
-
-``` go
-package main
-
-import (
-	"github.com/gin-gonic/gin"
-	"github.com/qjw/session"
-	"net/http"
-)
-
-func main() {
-	r := gin.Default()
-	sessions.InitFlash([]byte("abcdefghijklmn"))
-
-	r.GET("/ping", func(c *gin.Context) {
-		sessions.AddFlash(c, "hello world")
-		c.Redirect(http.StatusFound, "/pong")
-	})
-
-	r.GET("/pong", func(c *gin.Context) {
-		msgs := sessions.Flashes(c)
-		if len(msgs) > 0 {
-			c.JSON(200, gin.H{
-				"message": msgs[0].(string),
-			})
-		} else {
-			c.JSON(200, gin.H{
-				"message": "",
-			})
-		}
-	})
-	r.Run("0.0.0.0:9090")
-}
-```
-
-输入<http://127.0.0.1:9090/ping> 自动跳转到<http://127.0.0.1:9090/pong>，并且显示ping设置的"hello world"

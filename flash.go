@@ -19,6 +19,9 @@ var (
 
 // 添加flash消息
 func AddFlash(c *gin.Context, msg string) {
+	if defaultStore == nil{
+		log.Fatal("not init yet")
+	}
 	session, _ := defaultStore.Get(c, defaultCookieKey)
 	session.AddFlash(msg)
 	session.Save()
@@ -26,6 +29,9 @@ func AddFlash(c *gin.Context, msg string) {
 
 // 获取所有的flask，并且清空。
 func Flashes(c *gin.Context) []interface{} {
+	if defaultStore == nil{
+		log.Fatal("not init yet")
+	}
 	session, _ := defaultStore.Get(c, defaultCookieKey)
 	flashes := session.Flashes()
 	defaultStore.Delete(c, defaultCookieKey)
